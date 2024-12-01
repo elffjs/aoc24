@@ -19,8 +19,8 @@ fn main() -> std::io::Result<()> {
         right.push(numbers[1]);
     }
 
-    left.sort();
-    right.sort();
+    left.sort_unstable();
+    right.sort_unstable();
 
     let result1: i32 = left.iter().zip(right.iter()).map(|x| (x.0 - x.1).abs()).sum();
 
