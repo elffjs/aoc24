@@ -13,7 +13,7 @@ fn main() -> std::io::Result<()> {
     for line in reader.lines() {
         let line = line?;
 
-        let numbers: Vec<i32> = line.split_whitespace().filter_map(|s| s.parse().ok()).collect();
+        let numbers: Vec<i32> = line.split_whitespace().map(|s| s.parse().unwrap()).collect();
 
         left.push(numbers[0]);
         right.push(numbers[1]);
