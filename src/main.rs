@@ -53,6 +53,7 @@ fn day2() -> std::io::Result<()> {
     let reader = BufReader::new(file);
 
     let mut safe_count: i32 = 0;
+    let mut safe_with_dampener_count: i32 = 0;
 
     for line in reader.lines() {
         let line = line?;
@@ -62,30 +63,43 @@ fn day2() -> std::io::Result<()> {
             .map(|s| s.parse().unwrap())
             .collect();
 
-        if levels.len() <= 1 {
-            safe_count += 1;
-            continue;
+        fn is_safe_without_dampener(levels: &Vec<i32>) -> bool {
+            if levels.len() <= 1 {
+                return true;
+            }
+
+            let differences: Vec<i32> = levels.windows(2).map(|x| x[1] - x[0]).collect();
+
+            let first_difference = differences[0];
+
+            if first_difference == 0 {
+                return false;
+            }
+
+            let increasing = first_difference > 0;
+
+            return differences
+                .iter()
+                .all(|&x| x.abs() >= 1 && x.abs() <= 3 && (x > 0) == increasing);
         }
 
-        let differences: Vec<i32> = levels.windows(2).map(|x| x[1] - x[0]).collect();
-
-        let first_difference = differences[0];
-
-        if first_difference == 0 {
-            continue;
-        }
-
-        let increasing = first_difference > 0;
-
-        if differences
-            .iter()
-            .all(|&x| x.abs() >= 1 && x.abs() <= 3 && (x > 0) == increasing)
-        {
+        if is_safe_without_dampener(&levels) {
             safe_count += 1;
+            safe_with_dampener_count += 1;
+        } else {
+            for i in 0..levels.len() {
+                let mut v = levels.clone();
+                v.remove(i);
+                if is_safe_without_dampener(&v) {
+                    safe_with_dampener_count += 1;
+                    break;
+                }
+            }
         }
     }
 
     println!("Safe reports: {}", safe_count);
+    println!("Safe reports with dampener: {}", safe_with_dampener_count);
 
     Ok(())
 }
