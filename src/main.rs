@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-fn main() -> std::io::Result<()> {
+fn day1() -> std::io::Result<()> {
     let file = File::open("inputs/day1")?;
     let reader = BufReader::new(file);
 
@@ -46,4 +46,50 @@ fn main() -> std::io::Result<()> {
     println!("Similarity score: {}", result2);
 
     Ok(())
+}
+
+fn day2() -> std::io::Result<()> {
+    let file = File::open("inputs/day2")?;
+    let reader = BufReader::new(file);
+
+    let mut safe_count: i32 = 0;
+
+    for line in reader.lines() {
+        let line = line?;
+
+        let levels: Vec<i32> = line
+            .split_whitespace()
+            .map(|s| s.parse().unwrap())
+            .collect();
+
+        if levels.len() <= 1 {
+            safe_count += 1;
+            continue;
+        }
+
+        let differences: Vec<i32> = levels.windows(2).map(|x| x[1] - x[0]).collect();
+
+        let first_difference = differences[0];
+
+        if first_difference == 0 {
+            continue;
+        }
+
+        let increasing = first_difference > 0;
+
+        if differences
+            .iter()
+            .all(|&x| x.abs() >= 1 && x.abs() <= 3 && (x > 0) == increasing)
+        {
+            safe_count += 1;
+        }
+    }
+
+    println!("Safe reports: {}", safe_count);
+
+    Ok(())
+}
+
+fn main() -> std::io::Result<()> {
+    day2()
 }
