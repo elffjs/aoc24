@@ -24,10 +24,10 @@ fn day1() -> std::io::Result<()> {
     left.sort_unstable();
     right.sort_unstable();
 
-    let result1: i32 = left
+    let result1: u32 = left
         .iter()
         .zip(right.iter())
-        .map(|x| x.0.abs_diff(x.1))
+        .map(|x| x.0.abs_diff(*x.1))
         .sum();
 
     println!("Total distance: {}", result1);
