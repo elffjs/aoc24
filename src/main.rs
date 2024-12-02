@@ -27,7 +27,7 @@ fn day1() -> std::io::Result<()> {
     let result1: i32 = left
         .iter()
         .zip(right.iter())
-        .map(|x| (x.0 - x.1).abs())
+        .map(|x| x.0.abs_diff(x.1))
         .sum();
 
     println!("Total distance: {}", result1);
