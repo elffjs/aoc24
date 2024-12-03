@@ -109,17 +109,44 @@ fn day2() -> std::io::Result<()> {
 fn day3() -> std::io::Result<()> {
     let program = fs::read_to_string("inputs/day3")?;
 
+    let do_pattern = Regex::new(r"do\(\)").unwrap();
+    let dont_pattern = Regex::new(r"don't\(\)").unwrap();
+
+    let dos: Vec<usize> = do_pattern
+        .captures_iter(&program)
+        .map(|m| m.get(0).unwrap().start())
+        .collect();
+    let donts: Vec<usize> = dont_pattern
+        .captures_iter(&program)
+        .map(|m| m.get(0).unwrap().start())
+        .collect();
+
     let mut tot: i32 = 0;
+    let mut enabled_tot: i32 = 0;
 
     let pattern = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
     for m in pattern.captures_iter(&program) {
+        let pos = m.get(0).unwrap().start();
+
+        println!("{}", m.get(0).unwrap().as_str());
+
+        let prev_do = dos.iter().filter(|i| **i < pos).max();
+        let prev_dont = donts.iter().filter(|i| **i < pos).max();
+
         let x: i32 = m.get(1).unwrap().as_str().parse().unwrap();
         let y: i32 = m.get(2).unwrap().as_str().parse().unwrap();
 
-        tot += x * y;
+        let prod = x * y;
+
+        tot += prod;
+
+        if prev_dont.is_none() || !prev_do.is_none() && prev_dont.unwrap() < prev_do.unwrap() {
+            enabled_tot += prod;
+        }
     }
 
     println!("Sum of multiplications: {}", tot);
+    println!("Sum of enabled multiplications: {}", enabled_tot);
 
     Ok(())
 }
