@@ -132,8 +132,8 @@ fn day3() -> std::io::Result<()> {
         let prev_do = dos.iter().filter(|i| **i < pos).max();
         let prev_dont = donts.iter().filter(|i| **i < pos).max();
 
-        let x: i32 = m.get(1).unwrap().as_str().parse().unwrap();
-        let y: i32 = m.get(2).unwrap().as_str().parse().unwrap();
+        let x: i32 = m[1].parse().unwrap();
+        let y: i32 = m[2].parse().unwrap();
 
         let prod = x * y;
 
