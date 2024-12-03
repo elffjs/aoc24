@@ -1,4 +1,6 @@
+use regex::Regex;
 use std::collections::HashMap;
+use std::fs;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -104,6 +106,24 @@ fn day2() -> std::io::Result<()> {
     Ok(())
 }
 
+fn day3() -> std::io::Result<()> {
+    let program = fs::read_to_string("inputs/day3")?;
+
+    let mut tot: i32 = 0;
+
+    let pattern = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
+    for m in pattern.captures_iter(&program) {
+        let x: i32 = m.get(1).unwrap().as_str().parse().unwrap();
+        let y: i32 = m.get(2).unwrap().as_str().parse().unwrap();
+
+        tot += x * y;
+    }
+
+    println!("Sum of multiplications: {}", tot);
+
+    Ok(())
+}
+
 fn main() -> std::io::Result<()> {
-    day2()
+    day3()
 }
