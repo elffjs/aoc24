@@ -125,10 +125,9 @@ fn day3() -> std::io::Result<()> {
     let mut enabled_tot: i32 = 0;
 
     let pattern = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
+
     for m in pattern.captures_iter(&program) {
         let pos = m.get(0).unwrap().start();
-
-        println!("{}", m.get(0).unwrap().as_str());
 
         let prev_do = dos.iter().filter(|i| **i < pos).max();
         let prev_dont = donts.iter().filter(|i| **i < pos).max();
@@ -140,7 +139,7 @@ fn day3() -> std::io::Result<()> {
 
         tot += prod;
 
-        if prev_dont.is_none() || !prev_do.is_none() && prev_dont.unwrap() < prev_do.unwrap() {
+        if prev_dont < prev_do {
             enabled_tot += prod;
         }
     }
