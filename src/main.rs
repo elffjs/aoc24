@@ -150,48 +150,57 @@ fn day3() -> std::io::Result<()> {
     Ok(())
 }
 
+use std::ops::Add;
+
 fn day4() -> std::io::Result<()> {
     let word = "XMAS";
+
+    #[derive(Debug, Clone, Copy)]
+    struct Pos(i32, i32);
+
+    impl Add for Pos {
+        type Output = Pos;
+
+        fn add(self, right: Self) -> Self::Output {
+            Pos(self.0 + right.0, self.1 + right.1)
+        }
+    }
 
     let file = File::open("inputs/day4")?;
     let lines: Vec<String> = BufReader::new(file).lines().map(|l| l.unwrap()).collect();
     let puzzle: Vec<&[u8]> = lines.iter().map(|l| l.as_bytes()).collect();
 
     let dirs = vec![
-        [0, 1],
-        [0, -1],
-        [1, 0],
-        [-1, 0],
-        [1, 1],
-        [-1, 1],
-        [1, -1],
-        [-1, -1],
+        Pos(0, 1),
+        Pos(0, -1),
+        Pos(1, 0),
+        Pos(-1, 0),
+        Pos(1, 1),
+        Pos(-1, 1),
+        Pos(1, -1),
+        Pos(-1, -1),
     ];
 
     let rows = puzzle.len() as i32;
     let cols = puzzle[0].len() as i32;
 
     let in_bounds =
-        |pos: [i32; 2]| -> bool { (0..rows).contains(&pos[0]) && (0..cols).contains(&pos[1]) };
+        |pos: Pos| -> bool { (0..rows).contains(&pos.0) && (0..cols).contains(&pos.1) };
 
     let mut tot = 0;
 
-    for line in lines.clone() {
-        println!("{}", line);
-    }
-
-    let check_pos_dir = |pos: [i32; 2], dir: [i32; 2]| -> bool {
+    let check_pos_dir = |pos: Pos, dir: Pos| -> bool {
         let mut next = pos;
         for c in word.bytes() {
-            if !in_bounds(next) || puzzle[next[0] as usize][next[1] as usize] != c {
+            if !in_bounds(next) || puzzle[next.0 as usize][next.1 as usize] != c {
                 return false;
             }
-            next = [next[0] + dir[0], next[1] + dir[1]];
+            next = next + dir;
         }
         true
     };
 
-    let mut check_pos = |pos: [i32; 2]| {
+    let mut check_pos = |pos: Pos| {
         for dir in dirs.clone() {
             if check_pos_dir(pos, dir) {
                 tot += 1;
@@ -201,7 +210,7 @@ fn day4() -> std::io::Result<()> {
 
     for row in 0..rows {
         for col in 0..cols {
-            check_pos([row, col].clone());
+            check_pos(Pos(row, col));
         }
     }
 
