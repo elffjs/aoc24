@@ -187,9 +187,7 @@ fn day4() -> std::io::Result<()> {
                 return false;
             }
             next = [next[0] + dir[0], next[1] + dir[1]];
-
         }
-        println!("{:?} {:?} good", pos, dir);
         true
     };
 
@@ -209,7 +207,6 @@ fn day4() -> std::io::Result<()> {
 
     println!("XMAS count: {}", tot);
 
-    // println!("{:?}", reader);
     Ok(())
 }
 
