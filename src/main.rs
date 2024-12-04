@@ -170,22 +170,22 @@ fn day4() -> std::io::Result<()> {
     let lines: Vec<String> = BufReader::new(file).lines().map(|l| l.unwrap()).collect();
     let puzzle: Vec<&[u8]> = lines.iter().map(|l| l.as_bytes()).collect();
 
-    let dirs = vec![
-        Pos(0, 1),
-        Pos(0, -1),
-        Pos(1, 0),
-        Pos(-1, 0),
-        Pos(1, 1),
-        Pos(-1, 1),
-        Pos(1, -1),
-        Pos(-1, -1),
-    ];
+    let dirs: Vec<Pos> = (-1..=1)
+        .flat_map(|r| {
+            (-1..=1).flat_map(move |c| {
+                if r == 0 && c == 0 {
+                    None
+                } else {
+                    Some(Pos(r, c))
+                }
+            })
+        })
+        .collect();
 
     let rows = puzzle.len() as i32;
     let cols = puzzle[0].len() as i32;
 
-    let in_bounds =
-        |pos: Pos| -> bool { (0..rows).contains(&pos.0) && (0..cols).contains(&pos.1) };
+    let in_bounds = |pos: Pos| -> bool { (0..rows).contains(&pos.0) && (0..cols).contains(&pos.1) };
 
     let mut tot = 0;
 
@@ -215,6 +215,32 @@ fn day4() -> std::io::Result<()> {
     }
 
     println!("XMAS count: {}", tot);
+
+    let mut tot2 = 0;
+
+    for (r, row) in puzzle.iter().enumerate() {
+        for (c, char) in row.iter().enumerate() {
+            let rs = r as i32;
+            let cs = c as i32;
+            if puzzle[r][c] == b'A'
+                && in_bounds(Pos(rs - 1, cs - 1 as i32))
+                && in_bounds(Pos(rs + 1 as i32, cs + 1 as i32))
+            {
+                let al = puzzle[r - 1][c - 1];
+                let ar = puzzle[r - 1][c + 1];
+                let br = puzzle[r + 1][c + 1];
+                let bl = puzzle[r + 1][c - 1];
+
+                if (al == b'M' && br == b'S' || al == b'S' && br == b'M')
+                    && (bl == b'M' && ar == b'S' || bl == b'S' && ar == b'M')
+                {
+                    tot2 += 1;
+                }
+            }
+        }
+    }
+
+    println!("X-MAS count: {}", tot2);
 
     Ok(())
 }
