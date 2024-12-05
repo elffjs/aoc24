@@ -245,6 +245,47 @@ fn day4() -> std::io::Result<()> {
     Ok(())
 }
 
+use std::collections::HashSet;
+
+fn day5() -> std::io::Result<()> {
+    let file = File::open("inputs/day5")?;
+
+    let mut order_mode = true;
+
+    let mut before_after: HashSet<(i32, i32)> = HashSet::new();
+
+    let mut tot = 0;
+
+    'line_loop: for line in BufReader::new(file).lines() {
+        let line = line.unwrap();
+        if line == "" {
+            order_mode = false;
+            continue;
+        }
+        if order_mode {
+            let (before, after) = line.split_once("|").unwrap();
+            let (before, after): (i32, i32) = (before.parse().unwrap(), after.parse().unwrap());
+            before_after.insert((before, after));
+        } else {
+            let row: Vec<i32> = line.split(",").map(|x| x.parse().unwrap()).collect();
+
+            for i in (1..row.len()) {
+                for j in (0..i) {
+                    if before_after.contains(&(row[i], row[j])) {
+                        continue 'line_loop;
+                    }
+                }
+            }
+
+            tot += row[row.len() / 2];
+        }
+    }
+
+    println!("Sum of middle page numbers: {}", tot);
+
+    Ok(())
+}
+
 fn main() -> std::io::Result<()> {
-    day4()
+    day5()
 }
