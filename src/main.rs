@@ -222,7 +222,7 @@ fn day4() -> std::io::Result<()> {
         for (c, char) in row.iter().enumerate() {
             let rs = r as i32;
             let cs = c as i32;
-            if puzzle[r][c] == b'A'
+            if *char == b'A'
                 && in_bounds(Pos(rs - 1, cs - 1 as i32))
                 && in_bounds(Pos(rs + 1 as i32, cs + 1 as i32))
             {
@@ -255,10 +255,12 @@ fn day5() -> std::io::Result<()> {
     let mut before_after: HashSet<(i32, i32)> = HashSet::new();
 
     let mut tot = 0;
+    let mut tot2 = 0;
 
     'line_loop: for line in BufReader::new(file).lines() {
         let line = line.unwrap();
         if line == "" {
+            println!("{:?}", before_after);
             order_mode = false;
             continue;
         }
@@ -269,19 +271,46 @@ fn day5() -> std::io::Result<()> {
         } else {
             let row: Vec<i32> = line.split(",").map(|x| x.parse().unwrap()).collect();
 
-            for i in (1..row.len()) {
-                for j in (0..i) {
-                    if before_after.contains(&(row[i], row[j])) {
-                        continue 'line_loop;
+            let mut correct: Vec<i32> = Vec::new();
+
+            println!("{:?}", row);
+
+            let mut cared: HashSet<usize> = HashSet::new();
+
+            for j in 0..row.len() {
+                for i in 0..row.len() {
+                    if cared.contains(&i) {
+                        continue;
+                    }
+                    let mut good = true;
+                    for j in 0..row.len() {
+                        if cared.contains(&j) {
+                            continue;
+                        }
+                        if before_after.contains(&(row[j], row[i])) {
+                            good = false;
+                            break;
+                        }
+                    }
+                    if good {
+                        cared.insert(i);
+                        correct.push(row[i]);
                     }
                 }
             }
 
-            tot += row[row.len() / 2];
+            println!("{:?}", correct);
+
+            if row == correct {
+                tot += row[row.len() / 2];
+            } else {
+                tot2 += correct[row.len() / 2];
+            }
         }
     }
 
-    println!("Sum of middle page numbers: {}", tot);
+    println!("Sum of middle page numbers for correct rows: {}", tot);
+    println!("Sum of middle page numbers for corrected rows: {}", tot2);
 
     Ok(())
 }
